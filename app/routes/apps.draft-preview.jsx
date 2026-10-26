@@ -17,11 +17,20 @@ export async function loader({ request }) {
 
   const url = new URL(request.url);
   const titleFilter = (url.searchParams.get("title") || "")
-    .replace(/["\\]/g, "")
+    .replace(/[^a-zA-Z0-9\s-]/g, "")
     .trim();
-  const search = titleFilter
-    ? `status:draft title:*${titleFilter}*`
-    : "status:draft";
+  const collectionId = url.searchParams.get("collection_id") || "";
+  if (!/^\d+$/.test(collectionId)) {
+    return json({ error: "A collection ID is required" }, 400);
+  }
+  const searchTerms = ["status:draft"];
+  searchTerms.push(`collection_id:${collectionId}`);
+  if (titleFilter) searchTerms.push(`title:*${titleFilter}*`);
+  const search = searchTerms.join(" ");
+  const requestedLimit = Number.parseInt(url.searchParams.get("limit") || "100", 10);
+  const limit = Number.isFinite(requestedLimit)
+    ? Math.min(Math.max(requestedLimit, 1), 100)
+    : 100;
   const result = await admin.graphql(
     `#graphql
       query DraftPreviewProducts($search: String!) {
@@ -31,7 +40,7 @@ export async function loader({ request }) {
             title
             handle
             description
-            featuredImage { url altText }
+            featuredImage { url altText width height }
             priceRangeV2 { minVariantPrice { amount currencyCode } }
             variants(first: 100) {
               nodes { id title availableForSale price sku }
@@ -47,7 +56,7 @@ export async function loader({ request }) {
     return json({ error: "Unable to load draft products" }, 502);
   }
   return json({
-    products: body.data.products.nodes,
+    products: body.data.products.nodes.slice(0, limit),
   });
 }
 
