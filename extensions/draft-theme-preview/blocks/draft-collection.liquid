@@ -1,0 +1,25 @@
+{% if request.design_mode %}
+  <div
+    class="draft-preview"
+    data-endpoint="{{ routes.root_url }}apps/draft-preview{% if block.settings.title != blank %}?title={{ block.settings.title | url_encode }}{% endif %}"
+    data-money-format="{{ shop.money_format | escape }}"
+    {{ block.shopify_attributes }}
+  >
+    <h2 class="draft-preview__heading">{{ block.settings.heading | escape }}</h2>
+    <div class="draft-preview__status" role="status">Loading draft products…</div>
+    <div class="draft-preview__grid" hidden></div>
+  </div>
+  {{ 'draft-collection.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'draft-collection.js' | asset_url }}" defer></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Draft products preview",
+  "target": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Draft products preview" },
+    { "type": "text", "id": "title", "label": "Optional title filter", "info": "Leave blank to show all draft products. Otherwise enter a word from product title." }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,6 @@
+.draft-preview { margin-block: 2rem; }
+.draft-preview__heading { margin: 0 0 1rem; }
+.draft-preview__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.draft-preview__card { border: 1px solid rgba(0,0,0,.12); padding: 1rem; }
+.draft-preview__card img { display: block; width: 100%; height: auto; object-fit: cover; }
+.draft-preview__card h3 { margin-block: .75rem .25rem; }
