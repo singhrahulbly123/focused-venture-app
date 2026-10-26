@@ -25,11 +25,29 @@
   };
 
   const productImage = (product) => product.featuredImage || product.image || null;
-  const previewLink = (product) =>
-    typeof product.onlineStorePreviewUrl === "string" &&
-    /^https:\/\//i.test(product.onlineStorePreviewUrl)
-      ? product.onlineStorePreviewUrl
-      : "";
+  const previewLink = (product) => {
+    if (
+      typeof product.onlineStorePreviewUrl !== "string" ||
+      !/^https:\/\//i.test(product.onlineStorePreviewUrl)
+    ) {
+      return "";
+    }
+
+    try {
+      const url = new URL(product.onlineStorePreviewUrl);
+      const currentHost = window.location.hostname;
+      if (
+        currentHost.endsWith(".shopifypreview.com") &&
+        url.hostname.endsWith(".shopifypreview.com")
+      ) {
+        // Keep Shopify's product preview key, but retain the current draft theme preview host.
+        url.host = window.location.host;
+      }
+      return url.href;
+    } catch {
+      return "";
+    }
+  };
 
   const linked = (node, product, className) => {
     const href = previewLink(product);
