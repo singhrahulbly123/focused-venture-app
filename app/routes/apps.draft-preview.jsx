@@ -40,6 +40,7 @@ export async function loader({ request }) {
             title
             handle
             description
+            onlineStorePreviewUrl
             featuredImage { url altText width height }
             priceRangeV2 { minVariantPrice { amount currencyCode } }
             variants(first: 100) {
