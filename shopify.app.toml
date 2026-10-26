@@ -2,7 +2,7 @@
 
 client_id = "a51145b95e41dfa97a73eab06b4bb034"
 name = "focused-venture-app"
-application_url = "https://example.com"
+application_url = "https://focused-venture-app.onrender.com"
 embedded = true
 
 [build]
@@ -24,7 +24,7 @@ api_version = "2027-01"
 scopes = "read_products,write_app_proxy"
 
 [auth]
-redirect_urls = [ "https://example.com/auth/callback" ]
+redirect_urls = [ "https://focused-venture-app.onrender.com/auth/callback" ]
 
 [app_proxy]
 url = "/apps/draft-preview"
