@@ -15,7 +15,7 @@ if (
   delete process.env.HOST;
 }
 
-const host = new URL(process.env.SHOPIFY_APP_URL || "https://mavenspeed.com/")
+const host = new URL(process.env.SHOPIFY_APP_URL || "https://focused-venture-app.onrender.com")
   .hostname;
 let hmrConfig;
 

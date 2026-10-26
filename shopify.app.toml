@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "a51145b95e41dfa97a73eab06b4bb034"
+client_id = "0f68488ec838a75af4bcc525da52f7d3"
 name = "focused-venture-app"
 application_url = "https://focused-venture-app.onrender.com"
 embedded = true
