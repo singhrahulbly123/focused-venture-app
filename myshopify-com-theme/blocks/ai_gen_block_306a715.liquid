@@ -1,0 +1,522 @@
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% capture cart_form_class %}ai-performance-showcase-{{ ai_gen_id }}__cart-form{% endcapture %}
+
+{%- comment -%}
+  Use the collection selected in the theme editor.
+  Fallback: if no collection is selected, try to find a collection whose handle
+  matches the Section heading (for example: THROTTLE CABLE BRACKETS -> throttle-cable-brackets).
+{%- endcomment -%}
+{% assign selected_collection = block.settings.collection %}
+{% if selected_collection == blank and block.settings.heading != blank %}
+  {% assign heading_collection_handle = block.settings.heading | handleize %}
+  {% assign selected_collection = collections[heading_collection_handle] %}
+{% endif %}
+{% assign draft_preview_enabled = request.design_mode %}
+{% if theme.role == 'unpublished' %}
+  {% assign draft_preview_enabled = true %}
+{% endif %}
+
+{% style %}
+  .ai-performance-showcase-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 30px 20px;
+    background: {{ block.settings.background_color }};
+ 
+    color: #000;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__intro {
+    text-align: center;
+    margin-bottom: 34px;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__eyebrow {
+        display: inline-block;
+        padding: 3px 22px;
+        margin-bottom: 0px;
+        border: 1px solid #7a1e1e;
+        border-radius: 30px;
+        background: #7a1e1e;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .18em;
+    
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__heading {
+    margin: 0;
+    color: #000;
+    font-size: clamp(26px, 2vw, 36px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: .035em;
+    overflow-wrap: anywhere;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__divider {
+    width: 52px;
+    height: 3px;
+    margin: 18px auto 0;
+    background: #7a1e1e;
+    border-radius: 3px;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #292626;
+    border-radius: 0px;
+    background: #fff;
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__card:hover {
+    transform: translateY(-4px);
+    border-color: #574044;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .28);
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__image-wrap {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    background: #201e1e;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* object-fit: cover; */
+    transition: transform .25s ease;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__card:hover .ai-performance-showcase-{{ ai_gen_id }}__image {
+    transform: scale(1.04);
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__placeholder {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__placeholder svg {
+    width: 70%;
+    height: 70%;
+    color: #777;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1;
+    padding: 5px 10px;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__badge--sale,
+  .ai-performance-showcase-{{ ai_gen_id }}__badge--hot {
+    background: #c62838;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__badge--new {
+    background: #397844;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__badge--soldout {
+    background: #5c5c5c;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__details {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 15px;
+    border-top: 1px solid #000000;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__text {
+    min-width: 0;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__title {
+        display: block;
+        margin: 0 0 7px;
+        color: #000;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.35;
+        text-decoration: none;
+        overflow-wrap: anywhere;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__price {
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__sold-text {
+    display: block;
+    margin-top: 4px;
+    color: #aaa;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__cart-form {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__cart-button {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #3a3636;
+    border-radius: 8px;
+    background: #242121;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color .2s ease, border-color .2s ease;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__cart-button:hover {
+    background: #c62838;
+    border-color: #c62838;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__cart-button:focus-visible,
+  .ai-performance-showcase-{{ ai_gen_id }}__title:focus-visible,
+  .ai-performance-showcase-{{ ai_gen_id }}__image-link:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__cart-button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+  }
+
+  .ai-performance-showcase-{{ ai_gen_id }}__empty {
+    grid-column: 1 / -1;
+    padding: 32px 18px;
+    border: 1px dashed #575151;
+    border-radius: 12px;
+    color: #d1cccc;
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .ai-performance-showcase-{{ ai_gen_id }}__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 520px) {
+    .ai-performance-showcase-{{ ai_gen_id }} {
+      padding: 40px 16px;
+    }
+
+    .ai-performance-showcase-{{ ai_gen_id }}__heading {
+      font-size: 26px;
+      line-height: 1.2;
+    }
+
+    .ai-performance-showcase-{{ ai_gen_id }}__grid {
+      gap: 12px;
+    }
+
+    .ai-performance-showcase-{{ ai_gen_id }}__details {
+      align-items: flex-start;
+      padding: 12px;
+    }
+
+    .ai-performance-showcase-{{ ai_gen_id }}__title {
+      font-size: 13px;
+    }
+
+    .ai-performance-showcase-{{ ai_gen_id }}__cart-button {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ai-performance-showcase-{{ ai_gen_id }}__card,
+    .ai-performance-showcase-{{ ai_gen_id }}__image,
+    .ai-performance-showcase-{{ ai_gen_id }}__cart-button {
+      transition: none;
+    }
+  }
+{% endstyle %}
+
+<section class="ai-performance-showcase-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-performance-showcase-{{ ai_gen_id }}__inner">
+    <header class="ai-performance-showcase-{{ ai_gen_id }}__intro">
+      <span class="ai-performance-showcase-{{ ai_gen_id }}__eyebrow"></span>
+
+      {% if block.settings.heading != blank %}
+        <h2 class="ai-performance-showcase-{{ ai_gen_id }}__heading">
+          {{ block.settings.heading | escape }}
+        </h2>
+      {% endif %}
+
+      <div class="ai-performance-showcase-{{ ai_gen_id }}__divider" aria-hidden="true"></div>
+    </header>
+
+    <div
+      class="ai-performance-showcase-{{ ai_gen_id }}__grid"
+      {% if draft_preview_enabled and selected_collection != blank %}
+        data-draft-preview-grid
+        data-draft-preview-kind="performance"
+        data-draft-preview-prefix="ai-performance-showcase-{{ ai_gen_id }}"
+        data-draft-preview-url="{{ shop.url }}{{ routes.root_url }}apps/draft-preview?collection_id={{ selected_collection.id }}&amp;limit={{ block.settings.product_limit }}"
+        data-draft-preview-theme-id="{{ theme.id }}"
+        style="visibility: hidden;"
+      {% endif %}
+    >
+      {% if selected_collection != blank %}
+        {% for product in selected_collection.products limit: block.settings.product_limit %}
+          {% assign badge_label = blank %}
+          {% assign badge_class = blank %}
+
+          {% unless product.available %}
+            {% assign badge_label = 'Sold out' %}
+            {% assign badge_class = 'soldout' %}
+          {% else %}
+            {% for product_tag in product.tags %}
+              {% assign tag_downcase = product_tag | downcase %}
+
+              {% if tag_downcase == 'sale' %}
+                {% assign badge_label = 'Sale' %}
+                {% assign badge_class = 'sale' %}
+                {% break %}
+              {% elsif tag_downcase == 'hot' %}
+                {% assign badge_label = 'Hot' %}
+                {% assign badge_class = 'hot' %}
+                {% break %}
+              {% elsif tag_downcase == 'new' %}
+                {% assign badge_label = 'New' %}
+                {% assign badge_class = 'new' %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endunless %}
+
+          <article class="ai-performance-showcase-{{ ai_gen_id }}__card">
+            <div class="ai-performance-showcase-{{ ai_gen_id }}__image-wrap">
+              <a
+                class="ai-performance-showcase-{{ ai_gen_id }}__image-link"
+                href="{{ product.url }}"
+                aria-label="View {{ product.title | escape }}"
+              >
+                {% if product.featured_image %}
+                  <img
+                    class="ai-performance-showcase-{{ ai_gen_id }}__image"
+                    src="{{ product.featured_image | image_url: width: 720 }}"
+                    alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                    width="{{ product.featured_image.width }}"
+                    height="{{ product.featured_image.height }}"
+                    loading="lazy"
+                  >
+                {% else %}
+                  <div class="ai-performance-showcase-{{ ai_gen_id }}__placeholder">
+                    {{ 'product-apparel-1' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </a>
+
+              {% if badge_label != blank %}
+                <span class="ai-performance-showcase-{{ ai_gen_id }}__badge ai-performance-showcase-{{ ai_gen_id }}__badge--{{ badge_class }}">
+                  {{ badge_label }}
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="ai-performance-showcase-{{ ai_gen_id }}__details">
+              <div class="ai-performance-showcase-{{ ai_gen_id }}__text">
+                <a class="ai-performance-showcase-{{ ai_gen_id }}__title" href="{{ product.url }}">
+                  {{ product.title | escape }}
+                </a>
+
+                <div class="ai-performance-showcase-{{ ai_gen_id }}__price">
+                  {{ product.price | money }}
+                </div>
+
+                {% comment %} {% unless product.available %}
+                  <span class="ai-performance-showcase-{{ ai_gen_id }}__sold-text">Sold out</span>
+                {% endunless %} {% endcomment %}
+              </div>
+
+              {% assign card_variant = product.selected_or_first_available_variant %}
+              {% if card_variant == nil %}
+                {% assign card_variant = product.variants.first %}
+              {% endif %}
+
+              {% if product.available and card_variant != nil and card_variant.available %}
+                {% form 'product', product, class: cart_form_class %}
+                  <input type="hidden" name="id" value="{{ card_variant.id }}">
+                  <input type="hidden" name="quantity" value="1">
+
+                  <button
+                    class="ai-performance-showcase-{{ ai_gen_id }}__cart-button"
+                    type="submit"
+                    aria-label="Add {{ product.title | escape }} to cart"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="19"
+                      height="19"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M3 3h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 2-1.6L22 7H6"></path>
+                      <circle cx="10" cy="20" r="1"></circle>
+                      <circle cx="19" cy="20" r="1"></circle>
+                    </svg>
+                  </button>
+                {% endform %}
+              {% else %}
+                <button
+                  class="ai-performance-showcase-{{ ai_gen_id }}__cart-button"
+                  type="button"
+                  aria-label="{{ product.title | escape }} is sold out"
+                  disabled
+                >
+                  <svg
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="19"
+                    height="19"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 3h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 2-1.6L22 7H6"></path>
+                    <circle cx="10" cy="20" r="1"></circle>
+                    <circle cx="19" cy="20" r="1"></circle>
+                  </svg>
+                </button>
+              {% endif %}
+            </div>
+          </article>
+        {% else %}
+          <div class="ai-performance-showcase-{{ ai_gen_id }}__empty">
+            This collection currently has no products available to the Online Store.
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="ai-performance-showcase-{{ ai_gen_id }}__empty">
+          Select a collection in this block. If no collection is selected, the code will also try to match the Section heading to a collection handle.
+        </div>
+      {% endif %}
+      {% if draft_preview_enabled and selected_collection != blank %}
+        <div class="ai-performance-showcase-{{ ai_gen_id }}__empty" data-draft-preview-status role="status" aria-live="polite">
+          Loading draft products...
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Performance parts",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "PERFORMANCE PARTS MAVEEN SPEED"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "Products to show",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#080808"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    }
+  ],
+  "presets": [
+    {
+      "name": "Performance parts"
+    }
+  ],
+  "class": "performance-parts-block"
+}
+{% endschema %}

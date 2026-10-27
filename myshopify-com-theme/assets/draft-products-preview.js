@@ -3,6 +3,9 @@
     "[data-draft-preview-grid][data-draft-preview-url]",
   );
   if (!grids.length) return;
+  const previewThemeId = Array.from(grids)
+    .map((grid) => grid.dataset.draftPreviewThemeId)
+    .find(Boolean);
 
   const element = (tag, className, text) => {
     const node = document.createElement(tag);
@@ -40,8 +43,11 @@
         currentHost.endsWith(".shopifypreview.com") &&
         url.hostname.endsWith(".shopifypreview.com")
       ) {
-        // Keep Shopify's product preview key, but retain the current draft theme preview host.
+        // Keep the draft product key and explicitly select this unpublished theme.
         url.host = window.location.host;
+        if (previewThemeId) {
+          url.searchParams.set("preview_theme_id", previewThemeId);
+        }
       }
       return url.href;
     } catch {
