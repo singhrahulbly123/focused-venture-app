@@ -5,7 +5,7 @@
   if (!grids.length) return;
   const previewThemeId = Array.from(grids)
     .map((grid) => grid.dataset.draftPreviewThemeId)
-    .find(Boolean);
+    .find(Boolean) || "189355229417";
 
   const element = (tag, className, text) => {
     const node = document.createElement(tag);
@@ -38,17 +38,12 @@
 
     try {
       const url = new URL(product.onlineStorePreviewUrl);
-      const currentHost = window.location.hostname;
-      if (
-        currentHost.endsWith(".shopifypreview.com") &&
-        url.hostname.endsWith(".shopifypreview.com")
-      ) {
-        // Keep Shopify's product preview key on the current theme preview host.
-        url.host = window.location.host;
-      }
-      // Product preview URLs can use the canonical store host, so always select
-      // the theme that rendered this draft product card.
-      if (previewThemeId) url.searchParams.set("preview_theme_id", previewThemeId);
+      // Use the storefront host that rendered this card (which can be the
+      // canonical domain or the theme's shopifypreview.com host).
+      url.host = window.location.host;
+      // Shopify's product preview key alone can select the published theme.
+      // Explicitly bind this link to the unpublished theme currently rendered.
+      url.searchParams.set("preview_theme_id", previewThemeId);
       return url.href;
     } catch {
       return "";
