@@ -30,7 +30,7 @@
 
 <div class="color-{{ section.settings.color_scheme }} gradient">
   {% if draft_preview_enabled %}
-    <div class="related-products page-width section-{{ section.id }}-padding isolate">
+    <div class="related-products page-width section-{{ section.id }}-padding isolate{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
       <h2 class="related-products__heading inline-richtext {{ section.settings.heading_size }}">
         {{ section.settings.heading }}
       </h2>
@@ -45,6 +45,8 @@
           data-draft-preview-badge-color="color-{{ settings.sale_badge_color_scheme }}"
           data-draft-preview-image-ratio="{{ section.settings.image_ratio }}"
           data-draft-preview-image-shape="{{ section.settings.image_shape }}"
+          data-draft-preview-show-badge="false"
+          data-draft-preview-currency-code-enabled="{{ settings.currency_code_enabled }}"
           data-draft-preview-theme-id="{{ theme.id }}"
           data-draft-preview-exclude-id="{{ product.id }}"
           data-draft-preview-url="{{ shop.url }}{{ routes.root_url }}apps/draft-preview?collection_id={{ draft_related_collection.id }}&amp;limit={{ section.settings.products_to_show }}"

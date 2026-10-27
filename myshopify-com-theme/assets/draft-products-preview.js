@@ -196,15 +196,17 @@
     );
     innerInfo.append(innerHeading);
     innerContent.append(innerInfo);
-    const innerBadge = element("div", `card__badge ${grid.dataset.draftPreviewBadgePosition || "bottom-left"}`);
-    innerBadge.append(
-      element(
-        "span",
-        `badge badge--bottom-left ${grid.dataset.draftPreviewBadgeColor || "color-accent-1"}`,
-        "Draft",
-      ),
-    );
-    innerContent.append(innerBadge);
+    if (grid.dataset.draftPreviewShowBadge !== "false") {
+      const innerBadge = element("div", `card__badge ${grid.dataset.draftPreviewBadgePosition || "bottom-left"}`);
+      innerBadge.append(
+        element(
+          "span",
+          `badge badge--bottom-left ${grid.dataset.draftPreviewBadgeColor || "color-accent-1"}`,
+          "Draft",
+        ),
+      );
+      innerContent.append(innerBadge);
+    }
     inner.append(innerContent);
 
     const content = element("div", "card__content");
@@ -226,16 +228,14 @@
     const priceContainer = element("div", "price__container");
     const regular = element("div", "price__regular");
     regular.append(element("span", "visually-hidden visually-hidden--inline", "Regular price"));
-    regular.append(
-      element(
-        "span",
-        "price-item price-item--regular",
-        money(
-          product.priceRangeV2?.minVariantPrice?.amount,
-          product.priceRangeV2?.minVariantPrice?.currencyCode,
-        ),
-      ),
-    );
+    const variantPrices = (product.variants?.nodes || [])
+      .map((variant) => Number(variant.price))
+      .filter(Number.isFinite);
+    const minPrice = Number(product.priceRangeV2?.minVariantPrice?.amount);
+    const maxPrice = variantPrices.length ? Math.max(...variantPrices) : minPrice;
+    const currency = product.priceRangeV2?.minVariantPrice?.currencyCode || "USD";
+    const amountText = `${maxPrice > minPrice ? "From " : ""}${money(minPrice, currency)}${grid.dataset.draftPreviewCurrencyCodeEnabled === "true" ? ` ${currency}` : ""}`;
+    regular.append(element("span", "price-item price-item--regular", amountText));
     priceContainer.append(regular, element("div", "price__sale"));
     price.append(priceContainer);
     cardInformation.append(price);
