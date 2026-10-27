@@ -43,12 +43,12 @@
         currentHost.endsWith(".shopifypreview.com") &&
         url.hostname.endsWith(".shopifypreview.com")
       ) {
-        // Keep the draft product key and explicitly select this unpublished theme.
+        // Keep Shopify's product preview key on the current theme preview host.
         url.host = window.location.host;
-        if (previewThemeId) {
-          url.searchParams.set("preview_theme_id", previewThemeId);
-        }
       }
+      // Product preview URLs can use the canonical store host, so always select
+      // the theme that rendered this draft product card.
+      if (previewThemeId) url.searchParams.set("preview_theme_id", previewThemeId);
       return url.href;
     } catch {
       return "";
