@@ -279,6 +279,12 @@
       if (!Array.isArray(payload.products)) {
         throw new Error("Draft products could not be loaded.");
       }
+      const excludeId = grid.dataset.draftPreviewExcludeId;
+      const products = excludeId
+        ? payload.products.filter(
+            (product) => String(product.id || "").split("/").pop() !== excludeId,
+          )
+        : payload.products;
 
       grid.style.visibility = "visible";
       grid.replaceChildren();
@@ -289,15 +295,15 @@
       grid.closest(".collection--empty")?.classList.remove("collection--empty");
       grid.closest("slider-component")?.resetPages?.();
 
-      if (!payload.products.length) {
+      if (!products.length) {
         status.classList.remove("visually-hidden");
-        status.textContent = "No draft products are assigned to this collection.";
+        status.textContent = "No other draft products are assigned to this collection.";
         status.hidden = false;
         return;
       }
 
       status.hidden = true;
-      payload.products.forEach((product, index) => {
+      products.forEach((product, index) => {
         grid.append(
           grid.dataset.draftPreviewKind === "performance"
             ? buildPerformanceCard(product, grid.dataset.draftPreviewPrefix)
